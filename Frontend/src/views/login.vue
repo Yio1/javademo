@@ -25,6 +25,7 @@
             @blur="blur('id')"
             @focus="focus('id')"
             class="input"
+            autocomplete="off"
             v-model="studentData.id"
           ></el-input>
         </el-form-item>
@@ -40,6 +41,7 @@
             @blur="blur('pw')"
             @focus="focus('pw')"
             class="input"
+            autocomplete="off"
             v-model="studentData.password"
             show-password
           ></el-input>
