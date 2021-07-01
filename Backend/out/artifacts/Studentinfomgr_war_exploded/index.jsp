@@ -12,7 +12,7 @@
   </head>
   <body>
     <%--注册--%>
-    <form action="reg">
+    <form action="servlet">
       账号：
       <input type="text" name="username" /> <br>
       密码：
