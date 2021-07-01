@@ -6,25 +6,66 @@
       highlight-current-row
       @current-change="focusRow"
     >
-      <el-table-column prop="number" label="序号" width="100">
+      <el-table-column prop="sid" label="学生编号" width="100">
       </el-table-column>
-      <el-table-column prop="id" label="终端编号" width="100">
+      <el-table-column prop="sname" label="学生姓名" width="100">
       </el-table-column>
-      <el-table-column prop="name" label="名称" width="100"> </el-table-column>
-      <el-table-column prop="type" label="终端类型" width="100">
+      <el-table-column prop="sno" label="学号" width="100"> </el-table-column>
+      <el-table-column prop="gradeid" label="年级" width="100">
       </el-table-column>
-      <el-table-column prop="position" label="终端位置" width="100">
+      <el-table-column prop="address" label="地址" width="100">
       </el-table-column>
-      <el-table-column prop="LatitudeLongitude" label="经纬度" width="150">
+      <el-table-column prop="score" label="分数" width="150"> </el-table-column>
+      <el-table-column prop="password" label="密码" width="100">
       </el-table-column>
-      <el-table-column prop="mac" label="终端mac" width="100">
-      </el-table-column>
-      <el-table-column prop="state" label="状态" width="100"> </el-table-column>
-      <el-table-column prop="person" label="创建人" width="100">
-      </el-table-column>
-      <el-table-column prop="date" label="操作日期" width="100">
+      <el-table-column label="操作">
+        <template slot-scope="scope">
+          <el-button size="mini" @click="handleEdit(scope.$index, scope.row)"
+            >编辑</el-button
+          >
+          <el-button
+            size="mini"
+            type="danger"
+            @click="handleDelete(scope.$index, scope.row)"
+            >删除</el-button
+          >
+        </template>
       </el-table-column>
     </el-table>
+
+    <el-dialog title="收货地址" :visible.sync="dialogFormVisible">
+      <el-form :model="form">
+        <el-form-item label="学生编号" :label-width="formLabelWidth">
+          <el-input v-model="form.sid" autocomplete="off" disabled></el-input>
+        </el-form-item>
+
+        <el-form-item label="学生姓名" :label-width="formLabelWidth">
+          <el-input v-model="form.sname" autocomplete="off"></el-input>
+        </el-form-item>
+
+        <el-form-item label="学号" :label-width="formLabelWidth">
+          <el-input v-model="form.sno" autocomplete="off"></el-input>
+        </el-form-item>
+
+        <el-form-item label="地址" :label-width="formLabelWidth">
+          <el-input v-model="form.address" autocomplete="off"></el-input>
+        </el-form-item>
+
+        <el-form-item label="分数" :label-width="formLabelWidth">
+          <el-input v-model="form.score" autocomplete="off"></el-input>
+        </el-form-item>
+
+        <el-form-item label="密码" :label-width="formLabelWidth">
+          <el-input v-model="form.password" autocomplete="off"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisible = false">取 消</el-button>
+        <el-button type="primary" @click="dialogFormVisible = false"
+          >确 定</el-button
+        >
+      </div>
+    </el-dialog>
   </div>
 </template>
 <script>
@@ -33,51 +74,62 @@ export default {
     return {
       tableData: [
         {
-          number: 0,
-          id: 0,
-          name: "我的大宝贝",
-          type: "还不错",
-          position: "曹县",
-          LatitudeLongitude: "115.98 40.196",
-          mac: "asdg12y3",
-          state: "在线",
-          person: "柳",
-          date: "2021.6.23",
+          sid: 1,
+          sname: "小叶",
+          sno: "1001",
+          gradeid: 1,
+          address: "北京",
+          score: 90,
+          password: 123,
         },
         {
-          number: 1,
-          id: 1,
-          name: "我的二宝贝",
-          type: "一般",
-          position: "武汉",
-          LatitudeLongitude: "96.98 10.196",
-          mac: "aasdaf",
-          state: "离线",
-          person: "杨",
-          date: "2021.6.23",
+          sid: 2,
+          sname: "小明",
+          sno: "1002",
+          gradeid: 1,
+          address: "香港",
+          score: 90,
+          password: 123,
         },
         {
-          number: 2,
-          id: 2,
-          name: "我的三宝贝",
-          type: "拉跨",
-          position: "北京",
-          LatitudeLongitude: "66.66 166.166",
-          mac: "asirfuhaif",
-          state: "未激活",
-          person: "魏",
-          date: "2021.6.23",
+          sid: 3,
+          sname: "小王",
+          sno: "1002",
+          gradeid: 3,
+          address: "香港",
+          score: 91,
+          password: 123,
+        },
+        {
+          sid: 4,
+          sname: "小常",
+          sno: "1003",
+          gradeid: 2,
+          address: "曹县",
+          score: 101,
+          password: 123,
         },
       ],
       currentRow: null,
+      dialogFormVisible: false,
+      form: {
+        sid: "",
+        sname: "",
+        sno: "",
+        gradeid: "",
+        address: "",
+        score: "",
+        password: "",
+      },
+      formLabelWidth: "100px",
     };
   },
   methods: {
     highlightRow(data) {
       let row = data.row;
-      if (row.state == "在线") {
+      if (row.gradeid == 1) {
         return "online-row";
-      } else if (row.state == "离线") {
+      } else if (row.gradeid == 2) {
         return "offline-row";
       } else {
         return "warning-row";
@@ -86,21 +138,28 @@ export default {
     focusRow(data) {
       this.currentRow = data;
     },
+    handleEdit(index, row) {
+      console.log(index, row);
+      this.form = row;
+      this.dialogFormVisible = true;
+    },
+    handleDelete(index, row) {
+      console.log(index, row);
+    },
+  },
+  beforeMount() {
+    // console.log(this.$route.params);
   },
 };
 </script>
 
 <style scoped>
 .el-table >>> .online-row {
+  display: relative;
   background-color: #e1f3d8;
 }
-.el-table >>> .offline-row {
-  background-color: #e9e9eb;
-}
-.el-table >>> .warning-row {
-  background-color: #fde2e2;
-}
-.el-table >>> .current-row ::before {
+.el-table >>> .online-row ::before {
+  transition: all 0.5s;
   display: block;
   content: "";
   position: absolute;
@@ -108,9 +167,53 @@ export default {
   left: 0px;
   width: 100%;
   height: 100%;
+  background: rgba(225, 243, 216, 0%);
+  pointer-events: none;
+}
+.el-table >>> .offline-row {
+  display: relative;
+  background-color: #e9e9eb;
+}
+.el-table >>> .offline-row ::before {
+  transition: all 0.5s;
+  display: block;
+  content: "";
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  width: 100%;
+  height: 100%;
+  background: rgba(233, 233, 235, 0%);
+  pointer-events: none;
+}
+.el-table >>> .warning-row {
+  display: relative;
+  background-color: #fde2e2;
+}
+.el-table >>> .warning-row ::before {
+  transition: all 0.5s;
+  display: block;
+  content: "";
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  width: 100%;
+  height: 100%;
+  background: rgba(253, 226, 226, 0%);
+  pointer-events: none;
+}
+.el-table >>> .current-row ::before {
+  transition: all 0.5s;
   background: rgba(0, 0, 0, 10%);
+  pointer-events: none;
 }
 .el-table >>> td {
   background-color: initial !important;
+}
+.el-table >>> .el-button::before {
+  background: rgba(0, 0, 0, 0%);
+}
+.el-table >>> span::before {
+  background: rgba(0, 0, 0, 0%) !important;
 }
 </style>
