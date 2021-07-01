@@ -55,13 +55,25 @@
             ></el-input>
           </el-form-item>
 
-          <el-form-item ref="pwLabel" prop="status" label-width="50px">
-            <el-input
-              placeholder="请输入状态"
+          <el-form-item
+            ref="pwLabel"
+            class="select"
+            prop="status"
+            label-width="50px"
+          >
+            <el-select
               class="input"
               v-model="studentData.status"
-              show-password
-            ></el-input>
+              placeholder="请选择是否在职/在校"
+            >
+              <el-option
+                v-for="item in select"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              >
+              </el-option>
+            </el-select>
           </el-form-item>
         </div>
 
@@ -71,10 +83,15 @@
           plain
           @click="login"
           :loading="loading"
-          >登录</el-button
+          >{{ statusCn }}</el-button
         >
-        <el-button class="btn-login" type="primary" plain @click="SignUp"
-          >注册</el-button
+        <el-button
+          class="btn-login"
+          type="primary"
+          plain
+          @click="SignUp"
+          :loading="changeLoading"
+          >切换{{ exchangeStatusCn }}</el-button
         >
       </el-form>
     </div>
@@ -87,8 +104,10 @@ export default {
       studentData: {
         id: "",
         password: "",
+        phone: "",
       },
       loading: false,
+      changeLoading: false,
       avatar: require("../assets/undraw_male_avatar_323b.png"),
       rules: {
         id: [{ required: true, message: " 请输入账号", trigger: "blur" }],
@@ -98,6 +117,18 @@ export default {
       pwUp: "",
       isLogin: true,
       status: "login",
+      statusCn: "登录",
+      exchangeStatusCn: "注册",
+      select: [
+        {
+          label: "是",
+          value: 1,
+        },
+        {
+          label: "否",
+          value: 0,
+        },
+      ],
     };
   },
   computed: {
@@ -115,10 +146,13 @@ export default {
       this.$refs.loginForm.validate((res, faild) => {
         if (res) {
           this.$axios
-            .get("/reg", {
+            .get("/servlet", {
               params: {
+                methods: this.status,
                 username: this.studentData.id,
                 password: this.studentData.password,
+                phone: this.studentData.phone,
+                status: this.studentData.status,
               },
             })
             .then((res) => {
@@ -129,6 +163,10 @@ export default {
                 });
                 console.log(res);
                 this.loading = false;
+                this.$router.replace({
+                  name: "Main",
+                  params: { ...res.data },
+                });
               } else {
                 this.$message({
                   message: "登录失败",
@@ -146,6 +184,10 @@ export default {
       // this.$router.replace("/SignUp");
       this.isLogin = !this.isLogin;
       this.status = this.status == "Sign up" ? "Login" : "Sign up";
+      this.statusCn = this.statusCn == "登录" ? "注册" : "登录";
+      this.exchangeStatusCn = this.exchangeStatusCn == "登录" ? "注册" : "登录";
+      this.changeLoading = true;
+      setTimeout(() => (this.changeLoading = false), 300);
     },
     focus: function(data) {
       if (data == "id") {
@@ -194,6 +236,9 @@ export default {
   border-bottom: 1px solid #3d3b4f;
   position: relative;
   left: -1rem;
+}
+.select >>> .el-select {
+  width: 100%;
 }
 .btn-login {
   border: 0;
